@@ -1,0 +1,123 @@
+{
+  "info": {
+    "name": "TechServices Peru - Ejercicio 1",
+    "description": "Coleccion de Postman para probar la API REST segura de TechServices Peru (GET /api/clientes/{id} con API Key y token Bearer).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "apiKey", "value": "MI_API_KEY_2026", "type": "string" },
+    { "key": "token", "value": "TOKEN_SEGURO_123456", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Consulta exitosa (analista1)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Respuesta esperada: HTTP 200 con el cliente y tokensRestantes = 9 (salio de 10)."
+      }
+    },
+    {
+      "name": "2. API Key incorrecta",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "API_KEY_FALSA_123" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Respuesta esperada: HTTP 401 - API Key no registrada."
+      }
+    },
+    {
+      "name": "3. Token incorrecto",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer TOKEN_QUE_NO_EXISTE" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Respuesta esperada: HTTP 401 - Token de autenticacion incorrecto."
+      }
+    },
+    {
+      "name": "4. Falta de encabezados",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Respuesta esperada: HTTP 401 - Falta el encabezado x-api-key."
+      }
+    },
+    {
+      "name": "5. Usuario inactivo",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "API_KEY_INACTIVA_2026" },
+          { "key": "Authorization", "value": "Bearer TOKEN_INACTIVO_2026" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Respuesta esperada: HTTP 403 - El usuario se encuentra inactivo."
+      }
+    },
+    {
+      "name": "6. Cliente inexistente",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "999"]
+        },
+        "description": "Respuesta esperada: HTTP 404 y NO se descuentan tokens (verificar saldo en phpMyAdmin)."
+      }
+    },
+    {
+      "name": "7. Usuario sin tokens",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "API_KEY_AGOTADA_2026" },
+          { "key": "Authorization", "value": "Bearer TOKEN_AGOTADO_2026" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Respuesta esperada: HTTP 429 - No tiene tokens disponibles."
+      }
+    }
+  ]
+}
